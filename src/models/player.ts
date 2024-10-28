@@ -31,6 +31,10 @@ export class Player {
     return this.user.getIndex();
   }
 
+  getUsername() {
+    return this.user.getName();
+  }
+
   setDto(dto: []) {
     this.dto = dto;
   }
@@ -43,9 +47,17 @@ export class Player {
     x: number,
     y: number,
   ): {
+    playerId: string;
     status: AttackResult;
     borders: [x: number, y: number][];
+    hasLost: boolean;
   } {
+    const response = {
+      playerId: this.id,
+      borders: [],
+      hasLost: false,
+    };
+
     for (let i = 0; i < this.ships.length; i++) {
       const ship = this.ships[i];
       const result = ship.attack(x, y);
@@ -53,27 +65,29 @@ export class Player {
       if (result !== 'miss') {
         if (result === 'retry') {
           return {
+            ...response,
             status: 'retry',
-            borders: [],
           };
         }
 
         if (result === 'killed') {
           return {
+            ...response,
             status: 'killed',
             borders: ship.getBorders(),
+            hasLost: this.ships.every((ship) => ship.isDestroyed()),
           };
         }
         return {
+          ...response,
           status: 'shot',
-          borders: [],
         };
       }
     }
 
     return {
+      ...response,
       status: 'miss',
-      borders: [],
     };
   }
 }

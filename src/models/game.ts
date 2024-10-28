@@ -75,9 +75,9 @@ export class Game extends EventEmitter {
     const opponent = this._getOpponentByPlayerId(attackerId);
     console.log(`checking attack: x=${position.x} y=${position.y}`);
     const result = opponent.checkAttack(position.x, position.y);
-    // if (result.status !== 'retry') {
-    //   this._switchTurns();
-    // }
+    if (result.status !== 'retry') {
+      // this._switchTurns();
+    }
     return result;
   }
 

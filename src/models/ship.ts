@@ -4,6 +4,7 @@ import { getNeighborCells } from '../utils';
 export class Ship {
   private readonly fragments: Map<string, boolean>;
   private previousAttacks: Set<string>;
+  private destroyed = false;
 
   constructor(
     position: { x: number; y: number },
@@ -44,6 +45,7 @@ export class Ship {
     );
 
     if (isKilled) {
+      this.destroyed = true;
       return 'killed';
     }
 
@@ -59,5 +61,9 @@ export class Ship {
 
       return acc.concat(neighborCells);
     }, []);
+  }
+
+  isDestroyed() {
+    return this.destroyed;
   }
 }

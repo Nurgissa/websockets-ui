@@ -1,7 +1,7 @@
 import { getRandomId } from '../utils';
 
 export class User {
-  private name: string;
+  private readonly name: string;
   private readonly index: string;
 
   constructor(name: string) {
@@ -11,5 +11,9 @@ export class User {
 
   getIndex() {
     return this.index;
+  }
+
+  getName() {
+    return this.name;
   }
 }

@@ -95,11 +95,11 @@ export function main() {
   const p2 = new Player('p2', u2);
 
   for (const ship of ships1) {
-    p1.createShip(ship.position, ship.type, ship.direction, ship.length);
+    p1.createShip(ship.position, ship.direction, ship.length);
   }
 
   for (const ship of ships2) {
-    p2.createShip(ship.position, ship.type, ship.direction, ship.length);
+    p2.createShip(ship.position, ship.direction, ship.length);
   }
 
   const g1 = new Game(r1);
