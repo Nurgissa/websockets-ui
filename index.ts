@@ -138,17 +138,10 @@ const webSocketServer = new WebSocketServer({
           }
 
           room.addUser(user);
-          webSocketServer.clients.forEach((client) => {
-            client.send(toSerializedMessage('update_winners', []));
-            client.send(
-              toSerializedMessage(
-                'update_room',
-                Array.from(roomMap.values()).filter((room) => !room.isFull()),
-              ),
-            );
-          });
 
           const game = new Game(room);
+
+          console.log(roomMap);
           if (room.isFull()) {
             room.getUsers().forEach((user) => {
               const player = new Player(user);
@@ -171,8 +164,25 @@ const webSocketServer = new WebSocketServer({
               );
 
               gameMap.set(game.getGameId(), game);
+
+              Array.from(roomMap.entries()).forEach(([roomId, room]) => {
+                const userId = user.getIndex();
+                if (!room.isFull() && room._hasUser(userId)) {
+                  roomMap.delete(roomId);
+                }
+              });
             });
           }
+          console.log(roomMap);
+          webSocketServer.clients.forEach((client) => {
+            client.send(toSerializedMessage('update_winners', []));
+            client.send(
+              toSerializedMessage(
+                'update_room',
+                Array.from(roomMap.values()).filter((room) => !room.isFull()),
+              ),
+            );
+          });
 
           break;
         }
