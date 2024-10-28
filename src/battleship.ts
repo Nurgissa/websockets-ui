@@ -91,8 +91,8 @@ export function main() {
 
   console.log(r1);
 
-  const p1 = new Player('p1', u1);
-  const p2 = new Player('p2', u2);
+  const p1 = new Player(u1);
+  const p2 = new Player(u2);
 
   for (const ship of ships1) {
     p1.createShip(ship.position, ship.direction, ship.length);

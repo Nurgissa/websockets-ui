@@ -8,8 +8,8 @@ export class Player {
   ships: Ship[];
   dto: [];
 
-  constructor(id: string, user: User) {
-    this.id = id;
+  constructor(user: User) {
+    this.id = user.getIndex();
     this.user = user;
     this.ships = [];
     this.dto = [];

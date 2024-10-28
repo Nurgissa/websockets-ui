@@ -151,8 +151,7 @@ const webSocketServer = new WebSocketServer({
           const game = new Game(room);
           if (room.isFull()) {
             room.getUsers().forEach((user) => {
-              const playerId = `player-${getRandomId()}`;
-              const player = new Player(playerId, user);
+              const player = new Player(user);
               game.addPlayer(player);
 
               const playerSocket = userToSocketMap.get(user.getIndex());
@@ -167,7 +166,7 @@ const webSocketServer = new WebSocketServer({
               playerSocket.send(
                 toSerializedMessage('create_game', {
                   idGame: game.getGameId(),
-                  idPlayer: playerId,
+                  idPlayer: player.getId(),
                 }),
               );
 
@@ -271,39 +270,46 @@ const webSocketServer = new WebSocketServer({
               if (result.hasLost) {
                 socket.send(
                   toSerializedMessage('finish', {
-                    currentPlayer: result.playerId,
+                    winPlayer: attackerId,
                   }),
                 );
+              }
+
+              if (!result.hasLost) {
                 socket.send(
-                  toSerializedMessage(
-                    'update_winners',
-                    Array.from(winnersMap.entries()).map(([key, value]) => ({
-                      name: key,
-                      wins: value,
-                    })),
-                  ),
+                  toSerializedMessage('turn', {
+                    currentPlayer: game.getTurn(),
+                  }),
                 );
               }
-            }
-
-            if (!result.hasLost) {
-              socket.send(
-                toSerializedMessage('turn', {
-                  currentPlayer: game.getTurn(),
-                }),
-              );
             }
           });
 
           if (result.hasLost) {
-            const winCount = winnersMap.get(attackerId) || 0;
-            winnersMap.set(attackerId, winCount + 1);
+            const user = userMap.get(attackerId);
+            const winCount = winnersMap.get(user.getName()) || 0;
+            winnersMap.set(user.getName(), winCount + 1);
+
+            game.getAllPlayers().forEach((player) => {
+              const userId = player.getUserId();
+              const socket = userToSocketMap.get(userId);
+              socket.send(
+                toSerializedMessage(
+                  'update_winners',
+                  Array.from(winnersMap.entries()).map(([key, value]) => {
+                    return {
+                      name: key,
+                      wins: value,
+                    };
+                  }),
+                ),
+              );
+            });
           }
           break;
         }
         case 'attack': {
           const { gameId, indexPlayer: attackerId, x, y } = dataPayload;
-          console.log(winnersMap);
           const game = gameMap.get(gameId);
           if (!game) {
             console.error(
@@ -372,8 +378,9 @@ const webSocketServer = new WebSocketServer({
           });
 
           if (result.hasLost) {
-            const winCount = winnersMap.get(attackerId) || 0;
-            winnersMap.set(attackerId, winCount + 1);
+            const user = userMap.get(attackerId);
+            const winCount = winnersMap.get(user.getName()) || 0;
+            winnersMap.set(user.getName(), winCount + 1);
 
             game.getAllPlayers().forEach((player) => {
               const userId = player.getUserId();
