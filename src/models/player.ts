@@ -5,11 +5,13 @@ import { AttackResult } from '../types';
 export class Player {
   id: string;
   private user: User;
+  private bot: boolean;
   ships: Ship[];
   dto: [];
 
-  constructor(user: User) {
+  constructor(user: User, isBot: boolean = false) {
     this.id = user.getIndex();
+    this.bot = isBot;
     this.user = user;
     this.ships = [];
     this.dto = [];
@@ -33,6 +35,10 @@ export class Player {
 
   getUsername() {
     return this.user.getName();
+  }
+
+  isBot() {
+    return this.bot;
   }
 
   setDto(dto: []) {

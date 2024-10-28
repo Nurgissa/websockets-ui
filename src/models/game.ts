@@ -1,7 +1,6 @@
 import { Player } from './player';
 import { Room } from './room';
 import { getRandomId } from '../utils';
-import { User } from './user';
 import EventEmitter from 'node:events';
 
 export class Game extends EventEmitter {
@@ -10,16 +9,17 @@ export class Game extends EventEmitter {
   private readonly room: Room;
   private status: 'waiting' | 'started';
   private attackCounter: number;
+  private withBot: boolean;
 
-  constructor(room: Room) {
+  constructor(options?: { withBot: boolean }) {
     super();
     this.gameId = `game-${getRandomId()}`;
     this.playerList = [];
-    this.room = room;
+    // this.room = room;
     this.attackCounter = 0;
     this.status = 'waiting';
+    this.withBot = options.withBot || false;
   }
-
   getGameId(): string {
     return this.gameId;
   }
@@ -61,10 +61,6 @@ export class Game extends EventEmitter {
     return this.playerList[this.attackCounter % 2].getId();
   }
 
-  getRoom() {
-    return this.room;
-  }
-
   attack(
     attackerId: string,
     position?: {
@@ -76,7 +72,7 @@ export class Game extends EventEmitter {
     console.log(`checking attack: x=${position.x} y=${position.y}`);
     const result = opponent.checkAttack(position.x, position.y);
     if (result.status !== 'retry') {
-      // this._switchTurns();
+      this._switchTurns();
     }
     return result;
   }

@@ -10,6 +10,7 @@ export type Command =
   | 'randomAttack'
   | 'finish'
   | 'update_room'
-  | 'update_winners';
+  | 'update_winners'
+  | 'single_play';
 
 export type AttackResult = 'miss' | 'killed' | 'shot' | 'retry';
