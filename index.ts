@@ -23,8 +23,6 @@ const gameMap = new Map<string, Game>();
 const roomMap = new Map<string, Room>();
 const winnersMap = new Map<string, number>();
 
-// main();
-
 const webSocketServer = new WebSocketServer({
   port: WEBSOCKET_PORT,
 })
@@ -136,7 +134,7 @@ const webSocketServer = new WebSocketServer({
 
           room.addUser(user);
 
-          const game = new Game({ withBot: false });
+          const game = new Game();
 
           console.log(roomMap);
           if (room.isFull()) {
@@ -327,7 +325,7 @@ const webSocketServer = new WebSocketServer({
             gameMap.delete(game.getGameId());
           }
 
-          const opponent = game._getOpponentByPlayerId(attackerId);
+          const opponent = game.getOpponentByPlayerId(attackerId);
           if (opponent.isBot()) {
             const positionToAttack = (opponent as Bot).getNextAttack();
             const result = game.attack(opponent.getId(), {
@@ -360,21 +358,11 @@ const webSocketServer = new WebSocketServer({
           }
           break;
         }
-        case 'finish': {
-        }
-        case 'update_room': {
-        }
-        case 'update_winners': {
-        }
-        case 'turn': {
-        }
         case 'single_play': {
           const user = socketToUserMap.get(ws);
           assert.ok(user);
 
-          const game = new Game({
-            withBot: true,
-          });
+          const game = new Game();
           game.addPlayer(new Player(user));
           game.addPlayer(new Bot());
 
